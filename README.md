@@ -161,18 +161,19 @@ Bake has many practical applications, for example:
 ```javascript
 /* index.json
 {
-	"head": {
-		"title": "Hello world!"
-	},
-	"body":  {
-    	"p": "Hello world!",
-      "img": {
-        "attr": {
-          "src": "./circle.svg"
+    "head": {
+        "title": "Hello world!"
+    },
+    "body": {
+        "p": "Hello world!",
+        "img": {
+            "attr": {
+                "src": "./circle.svg"
+            }
         }
-      }
     }
-} */
+}
+*/
 
 bake({
   prolog: '<!doctype html>',
@@ -188,13 +189,14 @@ bake({
 /* circle.json
 {
     "circle": {
-    	"attr": {
-         "r": "30",
-         "cx": "30",
-         "cy": "30"
-       }
+        "attr": {
+            "r": "30",
+            "cx": "30",
+            "cy": "30"
+        }
     }
-} */
+}
+*/
 
 bake({
   format: true,
