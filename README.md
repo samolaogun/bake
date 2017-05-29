@@ -154,7 +154,7 @@ Recommended general bake configuration.
 ```json
 {
   "format": true,
-  "attr": "true"
+  "attr": true
 }
 ```
 Bake has many practical applications, for example:
