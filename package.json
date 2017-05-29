@@ -1,6 +1,6 @@
 {
   "name": "bake.core",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "Transform JSON to XML",
   "main": "dist/bake.core.js",
   "scripts": {
