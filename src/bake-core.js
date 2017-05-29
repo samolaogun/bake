@@ -1,4 +1,5 @@
 /*eslint no-unused-vars: ["error", { "vars": "local" }]*/
+/*eslint-env node*/
 
 /**
  * bake-core
@@ -47,24 +48,33 @@ const DEFAULTS = {
     prolog: CONSTANTS.PROLOG,
 };
 
-/*global throwContentErr contentIdentifier:true*/
-const throwContentErr = () => { throw new Error(`bake-core: "Strict Mode: Content Identifier "${contentIdentifier}" required"`); };
-const throwConfigErr = () => { throw new Error('bake-core: "Invalid config object"'); };
+/*global ERRORS.throwContentErr contentIdentifier:true*/
+const ERRORS = {
+    throwContentErr: () => { throw new Error(`bake-core: "Strict Mode: Content Identifier "${contentIdentifier}" required"`); },
+    throwConfigErr: () => { throw new Error('bake-core: "Invalid configuration object"'); },
+    throwIOErr: () => { throw new Error('bake-core: "IOError, unable to write to or read file"'); },
+    throwInputErr: () => { throw new Error('bake-core: "Invalid input"'); }
+};
 
 /**
  * @param {Object}        opts    config object
  * @returns {Function}
  */
 const BakeCore = (opts = {}) => {
-    /** @mixin */
-    let config = fs.existsSync(CONSTANTS.DOTFILE);
+    let config;
+    try {
+        config = fs.existsSync(CONSTANTS.DOTFILE);
+    } catch (e) {
+        ERRORS.throwConfigErr();
+    }
 
     if (config) {
-        config = fs.readFileSync(CONSTANTS.DOTFILE);
+        /** @mixin */
         try {
+            config = fs.readFileSync(CONSTANTS.DOTFILE);
             opts = Object.assign({}, DEFAULTS, JSON.parse(config), opts);
         } catch (e) {
-            throwConfigErr();
+            ERRORS.throwConfigErr();
         }
     } else {
         opts = Object.assign({}, DEFAULTS, opts);
@@ -87,7 +97,7 @@ const BakeCore = (opts = {}) => {
         if (hasAttributes) {
             if (!val[attributeIdentifier])
                 strict ?
-                content = val[contentIdentifier] || throwContentErr() :
+                content = val[contentIdentifier] || ERRORS.throwContentErr() :
                 content = val[contentIdentifier] || val;
             else
                 [attr, content] = [val[attributeIdentifier], val[contentIdentifier]];
@@ -140,19 +150,28 @@ const BakeCore = (opts = {}) => {
         };
 
         /** @protected */
-        const handleObjectInput = (load, fileOutput) =>
-            fileOutput ? fs.writeFileSync(fileOutput, getParsedXML(load)) : getParsedXML(load);
+        const handleObjectInput = (load, fileOutput) => {
+            try {
+                fileOutput ? fs.writeFileSync(fileOutput, getParsedXML(load)) : getParsedXML(load);
+            } catch (e) {
+                ERRORS.throwIOError();
+            }
+        };
 
         /** @protected */
         const handleFileInput = (path, fileOutput) => {
             const load = JSON.parse(fs.readFileSync(path).toString());
-            return fileOutput ? fs.writeFileSync(fileOutput, getParsedXML(load)) : getParsedXML(load);
+            try {
+                return fileOutput ? fs.writeFileSync(fileOutput, getParsedXML(load)) : getParsedXML(load);
+            } catch (e) {
+                ERRORS.throwIOError();
+            }
         };
 
         return (input = 'in.json', output = false) => {
             if (typeof input === 'string') return handleFileInput(input, output);
             else if (typeof input === 'object') return handleObjectInput(input, output);
-            else throw new Error('bake-core: Invalid JSON input.');
+            else ERRORS.throwInputErr();
         };
     })();
 };

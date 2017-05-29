@@ -1,4 +1,5 @@
 /*eslint no-unused-vars: ["error", { "vars": "local" }]*/
+/*eslint-env node*/
 
 /**
  * bake-core
@@ -54,12 +55,20 @@ var DEFAULTS = {
     prolog: CONSTANTS.PROLOG
 };
 
-/*global throwContentErr contentIdentifier:true*/
-var throwContentErr = function throwContentErr() {
-    throw new Error('bake-core: "Strict Mode: Content Identifier "' + contentIdentifier + '" required"');
-};
-var throwConfigErr = function throwConfigErr() {
-    throw new Error('bake-core: "Invalid config object"');
+/*global ERRORS.throwContentErr contentIdentifier:true*/
+var ERRORS = {
+    throwContentErr: function throwContentErr() {
+        throw new Error('bake-core: "Strict Mode: Content Identifier "' + contentIdentifier + '" required"');
+    },
+    throwConfigErr: function throwConfigErr() {
+        throw new Error('bake-core: "Invalid configuration object"');
+    },
+    throwIOErr: function throwIOErr() {
+        throw new Error('bake-core: "IOError, unable to write to or read file"');
+    },
+    throwInputErr: function throwInputErr() {
+        throw new Error('bake-core: "Invalid input"');
+    }
 };
 
 /**
@@ -69,15 +78,20 @@ var throwConfigErr = function throwConfigErr() {
 var BakeCore = function BakeCore() {
     var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    /** @mixin */
-    var config = _fs2.default.existsSync(CONSTANTS.DOTFILE);
+    var config = void 0;
+    try {
+        config = _fs2.default.existsSync(CONSTANTS.DOTFILE);
+    } catch (e) {
+        ERRORS.throwConfigErr();
+    }
 
     if (config) {
-        config = _fs2.default.readFileSync(CONSTANTS.DOTFILE);
+        /** @mixin */
         try {
+            config = _fs2.default.readFileSync(CONSTANTS.DOTFILE);
             opts = Object.assign({}, DEFAULTS, JSON.parse(config), opts);
         } catch (e) {
-            throwConfigErr();
+            ERRORS.throwConfigErr();
         }
     } else {
         opts = Object.assign({}, DEFAULTS, opts);
@@ -98,7 +112,7 @@ var BakeCore = function BakeCore() {
             content = val;
 
         if (hasAttributes) {
-            if (!val[attributeIdentifier]) strict ? content = val[contentIdentifier] || throwContentErr() : content = val[contentIdentifier] || val;else {
+            if (!val[attributeIdentifier]) strict ? content = val[contentIdentifier] || ERRORS.throwContentErr() : content = val[contentIdentifier] || val;else {
                 ;
                 var _ref = [val[attributeIdentifier], val[contentIdentifier]];
                 attr = _ref[0];
@@ -151,20 +165,28 @@ var BakeCore = function BakeCore() {
 
         /** @protected */
         var handleObjectInput = function handleObjectInput(load, fileOutput) {
-            return fileOutput ? _fs2.default.writeFileSync(fileOutput, getParsedXML(load)) : getParsedXML(load);
+            try {
+                fileOutput ? _fs2.default.writeFileSync(fileOutput, getParsedXML(load)) : getParsedXML(load);
+            } catch (e) {
+                ERRORS.throwIOError();
+            }
         };
 
         /** @protected */
         var handleFileInput = function handleFileInput(path, fileOutput) {
             var load = JSON.parse(_fs2.default.readFileSync(path).toString());
-            return fileOutput ? _fs2.default.writeFileSync(fileOutput, getParsedXML(load)) : getParsedXML(load);
+            try {
+                return fileOutput ? _fs2.default.writeFileSync(fileOutput, getParsedXML(load)) : getParsedXML(load);
+            } catch (e) {
+                ERRORS.throwIOError();
+            }
         };
 
         return function () {
             var input = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'in.json';
             var output = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-            if (typeof input === 'string') return handleFileInput(input, output);else if ((typeof input === 'undefined' ? 'undefined' : _typeof(input)) === 'object') return handleObjectInput(input, output);else throw new Error('bake-core: Invalid JSON input.');
+            if (typeof input === 'string') return handleFileInput(input, output);else if ((typeof input === 'undefined' ? 'undefined' : _typeof(input)) === 'object') return handleObjectInput(input, output);else ERRORS.throwInputErr();
         };
     }();
 };
