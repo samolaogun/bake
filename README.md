@@ -54,28 +54,36 @@ customBake({
 Aforementioned, you may configure the bake.core to work as you like by passing a configuration object to the function. Here is the list of options:
 
 ```javascript
-const options = {
+{
     parent: {
         name: '',
         attr: {}
     },
     attr: false,
+    attributeIdentifier: 'attr',
+    contentIdentifier: 'content',
+    strict: false,
     format: true,
-    prolog:'<?xml version="1.0" encoding="UTF-8"?>'
-};
+    prolog: '<?xml version="1.0" encoding="UTF-8"?>'
+}
 ```
-
-- parent `{Object} [parent={ name: '', attr: {} }] `
+- parent
   - wrap the transformed document (by specification, a JSON Object does not have an identifier for its topmost parent), no parent by default
-  - name `{string} [parent.name='']`
+  - name `''`
     - the name of the wrapping tag—an empty string by default
-  - attr `{Object} [parent.attr={}]`
+  - attr `{}`
     - property value pairs for the parent object
-- attr `{Boolean} [attr=false]`
+- attr `false`
   - use attribute-content syntax, false by default
-- format `{Boolean} [format=false]`
+- attrbuteIdentifier `'attr'`
+    - the attribute identifer for use with attribute-content syntax
+- contentIdentifier `'content'`
+    - the content identifer for use with attribute-content syntax
+- format `false`
   - return format XML, false by default
-- prolog `{String} [prolog='<?xml version="1.0" encoding="UTF-8"?>']`
+- strict `false`
+  - require a content field with attribute-content synatax, even without attributes
+- prolog `'<?xml version="1.0" encoding="UTF-8"?>'`
   - include XML prolog, standard xml prolog by default
 
 ## Attribute-Content Syntax
@@ -153,7 +161,7 @@ This is not ok.
 
 ## Examples
 
-Recommended general bake configuration.
+Recommended general bake configuration. These are global truths that stay constant over an entire project, specified within the `.bakerc` file. Add these locally, for the `.bakerc` file is looked for within the running context.
 ```json
 {
   "format": true,
@@ -180,7 +188,6 @@ Bake has many practical applications, for example:
 
 bake({
     prolog: '<!doctype html>',
-    format: true,
     parent: {
         name: 'html',
         attr: {
@@ -202,7 +209,6 @@ bake({
 */
 
 bake({
-    format: true,
     parent: {
         name: 'svg',
         attr: {

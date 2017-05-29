@@ -5,7 +5,6 @@
  * bake.core
  * 
  * @author  Sam Olaogun
- * @version 1.0.11
  * @license MIT
  */
 'use strict';
@@ -26,15 +25,7 @@ const CONSTANTS = {
     DOTFILE: '.bakerc' // UNIX standard
 };
 
-/**
- * @mixin
- * 
- * @property {Object}    parent         topmost wrapper
- * @property {Object}    parent.name    topmost wrapper tag type
- * @property {Object}    parent.attr    topmost wrapper attribute obj
- * @property {Boolean}   attr           parse JSON according to attr/content syntax
- * @property {String}    prolog         prepend each transform with a specified prolog
- */
+/** @mixin DEFAULTS */
 const DEFAULTS = {
     parent: {
         name: '',
@@ -50,17 +41,38 @@ const DEFAULTS = {
 
 /*global ERRORS.throwContentErr contentIdentifier:true*/
 const ERRORS = {
-    throwContentErr: () => { throw new Error(`bake-core: "Strict Mode: Content Identifier "${contentIdentifier}" required"`); },
-    throwConfigErr: () => { throw new Error('bake-core: "Invalid configuration object"'); },
-    throwIOErr: () => { throw new Error('bake-core: "IOError, unable to write to or read file"'); },
-    throwInputErr: () => { throw new Error('bake-core: "Invalid input"'); }
+    throwContentErr: () => {
+        throw new Error(`bake-core: "Strict Mode: Content Identifier "${contentIdentifier}" required"`);
+    },
+    throwConfigErr: () => {
+        throw new Error('bake-core: "Invalid configuration object"');
+    },
+    throwIOErr: () => {
+        throw new Error('bake-core: "IOError, unable to write to or read file"');
+    },
+    throwInputErr: () => {
+        throw new Error('bake-core: "Invalid input"');
+    }
 };
 
 /**
- * @param {Object}        opts    config object
+ * @param {Object}    opts    config object
  * @returns {Function}
  */
 const BakeCore = (opts = {}) => {
+    /**
+     * @mixin config
+     * 
+     * @property {Object}    parent                          topmost wrapper
+     * @property {String}    [parent.name='']                topmost wrapper tag type
+     * @property {String}    [parent.attr={}]                topmost wrapper attribute obj
+     * @property {String}    [attributeIdentifier='attr']    attribute/content syntax attribute
+     * @property {String}    [contentIdentifier='content']   attribute/content syntax content
+     * @property {Boolean}   [strict=false]                  omit content in attribute/content syntax
+     * @property {Boolean}   [attr=false]                    parse JSON according to attr/content syntax
+     * @property {Boolean}   [format=true]                   format the transformed document
+     * @property {String}    [prolog=CONSTANTS.PROLOG]       prepend each transform with a specified prolog
+     */
     let config;
     try {
         config = fs.existsSync(CONSTANTS.DOTFILE);
@@ -103,9 +115,12 @@ const BakeCore = (opts = {}) => {
                 [attr, content] = [val[attributeIdentifier], val[contentIdentifier]];
         }
 
-        if (Array.isArray(content)) return parseArray(key, content);
-        else if (typeof content === 'object') return parseXML(key, content, attr);
-        else return tagFactory(key, content, attr);
+        if (Array.isArray(content))
+            return parseArray(key, content);
+        else if (typeof content === 'object')
+            return parseXML(key, content, attr);
+        else
+            return tagFactory(key, content, attr);
     };
 
     const parseXML = (name, obj, attrs) =>
@@ -125,14 +140,17 @@ const BakeCore = (opts = {}) => {
                 ` ${attr}="${attrs[attr]}"`
             ), '') : attrs = '';
 
-        if (!content) return (
-            `<${name}${attrs}/>`
-        );
+        if (!content)
+            return (
+                `<${name}${attrs}/>`
+            );
 
-        if (name) return (
-            `<${name}${attrs}>${content}</${name}>`
-        );
-        else return content;
+        if (name)
+            return (
+                `<${name}${attrs}>${content}</${name}>`
+            );
+        else
+            return content;
     };
 
     /**
@@ -155,7 +173,7 @@ const BakeCore = (opts = {}) => {
             try {
                 return fileOutput ?
                     fs.writeFileSync(fileOutput, getParsedXML(load)) :
-                    fs.writeSync(1, `${getParsedXML(load)}\n`);
+                    getParsedXML(load);
             } catch (e) {
                 ERRORS.throwIOError();
             }
@@ -168,9 +186,12 @@ const BakeCore = (opts = {}) => {
         };
 
         return (input = 'in.json', output = false) => {
-            if (typeof input === 'string') return handleFileInput(input, output);
-            else if (typeof input === 'object') return handleObjectInput(input, output);
-            else ERRORS.throwInputErr();
+            if (typeof input === 'string')
+                return handleFileInput(input, output);
+            else if (typeof input === 'object')
+                return handleObjectInput(input, output);
+            else
+                ERRORS.throwInputErr();
         };
     })();
 };

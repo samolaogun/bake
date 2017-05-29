@@ -5,7 +5,6 @@
  * bake.core
  * 
  * @author  Sam Olaogun
- * @version 1.0.11
  * @license MIT
  */
 'use strict';
@@ -33,15 +32,7 @@ var CONSTANTS = {
     DOTFILE: '.bakerc' // UNIX standard
 };
 
-/**
- * @mixin
- * 
- * @property {Object}    parent         topmost wrapper
- * @property {Object}    parent.name    topmost wrapper tag type
- * @property {Object}    parent.attr    topmost wrapper attribute obj
- * @property {Boolean}   attr           parse JSON according to attr/content syntax
- * @property {String}    prolog         prepend each transform with a specified prolog
- */
+/** @mixin DEFAULTS */
 var DEFAULTS = {
     parent: {
         name: '',
@@ -72,12 +63,25 @@ var ERRORS = {
 };
 
 /**
- * @param {Object}        opts    config object
+ * @param {Object}    opts    config object
  * @returns {Function}
  */
 var BakeCore = function BakeCore() {
     var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
+    /**
+     * @mixin config
+     * 
+     * @property {Object}    parent                          topmost wrapper
+     * @property {String}    [parent.name='']                topmost wrapper tag type
+     * @property {String}    [parent.attr={}]                topmost wrapper attribute obj
+     * @property {String}    [attributeIdentifier='attr']    attribute/content syntax attribute
+     * @property {String}    [contentIdentifier='content']   attribute/content syntax content
+     * @property {Boolean}   [strict=false]                  omit content in attribute/content syntax
+     * @property {Boolean}   [attr=false]                    parse JSON according to attr/content syntax
+     * @property {Boolean}   [format=true]                   format the transformed document
+     * @property {String}    [prolog=CONSTANTS.PROLOG]       prepend each transform with a specified prolog
+     */
     var config = void 0;
     try {
         config = _fs2.default.existsSync(CONSTANTS.DOTFILE);
@@ -167,7 +171,7 @@ var BakeCore = function BakeCore() {
         /** @protected */
         var handleObjectInput = function handleObjectInput(load, fileOutput) {
             try {
-                return fileOutput ? _fs2.default.writeFileSync(fileOutput, getParsedXML(load)) : _fs2.default.writeSync(1, getParsedXML(load) + '\n');
+                return fileOutput ? _fs2.default.writeFileSync(fileOutput, getParsedXML(load)) : getParsedXML(load);
             } catch (e) {
                 ERRORS.throwIOError();
             }

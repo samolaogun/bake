@@ -2,7 +2,6 @@
  * bake.core
  * 
  * @author  Sam Olaogun
- * @version 1.0.11
  * @license MIT
  */
 'use strict';
@@ -17,19 +16,19 @@ describe('Parsing Validity', () => {
     it('parses nested arrays', () => {
         bakeNoFormat('test/arrays.json', 'test/arrays.xml');
         let xml = fs.readFileSync('test/arrays.xml').toString();
-        assert(xml === `${prolog}<test>1</test><test>2</test><test>3</test>`);
+        assert(xml === `${prolog}\n<test>1</test><test>2</test><test>3</test>`);
 
         xml = bakeNoFormat('test/arrays.json');
-        assert(xml === `${prolog}<test>1</test><test>2</test><test>3</test>`);
+        assert(xml === `${prolog}\n<test>1</test><test>2</test><test>3</test>`);
     });
 
     it('parses nested objects', () => {
         bakeNoFormat('test/objects.json', 'test/objects.xml');
         let xml = fs.readFileSync('test/objects.xml').toString();
-        assert(xml === `${prolog}<test><id>1</id><test><id>1</id></test></test>`);
+        assert(xml === `${prolog}\n<test><id>1</id><test><id>1</id></test></test>`);
 
         xml = bakeNoFormat('test/objects.json');
-        assert(xml === `${prolog}<test><id>1</id><test><id>1</id></test></test>`);
+        assert(xml === `${prolog}\n<test><id>1</id><test><id>1</id></test></test>`);
     });
 });
 
