@@ -154,7 +154,7 @@ const BakeCore = (opts = {}) => {
             try {
                 return fileOutput ?
                     fs.writeFileSync(fileOutput, getParsedXML(load)) :
-                    fs.writeSync(1, getParsedXML(load));
+                    fs.writeSync(1, `${getParsedXML(load)}\n`);
             } catch (e) {
                 ERRORS.throwIOError();
             }

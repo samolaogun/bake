@@ -166,7 +166,7 @@ var BakeCore = function BakeCore() {
         /** @protected */
         var handleObjectInput = function handleObjectInput(load, fileOutput) {
             try {
-                return fileOutput ? _fs2.default.writeFileSync(fileOutput, getParsedXML(load)) : _fs2.default.writeSync(1, getParsedXML(load));
+                return fileOutput ? _fs2.default.writeFileSync(fileOutput, getParsedXML(load)) : _fs2.default.writeSync(1, getParsedXML(load) + '\n');
             } catch (e) {
                 ERRORS.throwIOError();
             }
