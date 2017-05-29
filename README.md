@@ -1,11 +1,11 @@
-# bake-core
+# bake.core
 
 ## Basic Usage
 
-bake-core is a JSON to XML converter, not to be confused with bake-cli which provides a the command line tool derived from bake-core. When required, bake-core returns a function. Using it requires input information and optionally, a configuration object containing information describing how Bake should transform JSON.
+bake.core is a JSON to XML converter, not to be confused with bake.cli which provides a the command line tool derived from bake.core. When required, bake.core returns a function. Using it requires input information and optionally, a configuration object containing information describing how Bake should transform JSON.
 
 ```javascript
-var bake = require('bake-core');
+var bake = require('bake.core');
 
 // bake with options
 bake({/*...opts */})('path/to/input', 'path/to/output');
@@ -14,7 +14,7 @@ bake({/*...opts */})('path/to/input', 'path/to/output');
 bake()('path/to/input', 'path/to/output');
 ```
 
-The bake-core function—that is, the function that is returned when bake is required—returns a function which takes an input (`in.json` by default) and optionally, an output path. If no output path is specified, the resulting XML is returned.
+The bake.core function—that is, the function that is returned when bake is required—returns a function which takes an input (`in.json` by default) and optionally, an output path. If no output path is specified, the resulting XML is returned.
 
 ```javascript
 // transforms and formats 'in.json' into 'out.xml'
@@ -31,7 +31,7 @@ var xml = bake({ format: true })({
 });
 ```
 
-The reason why the bake-core function is curried is fairly simple. This architecure allows you to reuse the same configuration settings on multiple different transforms. Alternatively, you may specify your configuration settings in a `.bakeconfig` file using JSON notation. Inline configuration takes precedence over `.bakeconfig` settings.	
+The reason why the bake.core function is curried is fairly simple. This architecure allows you to reuse the same configuration settings on multiple different transforms. Alternatively, you may specify your configuration settings in a `.bakerc` file using JSON notation. Inline configuration takes precedence over `.bakerc` settings.	
 
 ```javascript
 var customBake = bake({
@@ -51,7 +51,7 @@ customBake({
 ```
 ## Options
 
-Aforementioned, you may configure the bake-core to work as you like by passing a configuration object to the function. Here is the list of options:
+Aforementioned, you may configure the bake.core to work as you like by passing a configuration object to the function. Here is the list of options:
 
 ```javascript
 const options = {
@@ -219,4 +219,4 @@ bake({
 
 ## License
 
-See it [here](http://github.com/samolaogun/bake-core/blob/master/LICENSE).
+See it [here](http://github.com/samolaogun/bake.core/blob/master/LICENSE).

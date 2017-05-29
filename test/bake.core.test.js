@@ -1,6 +1,13 @@
+/**
+ * bake.core
+ * 
+ * @author  Sam Olaogun
+ * @version 1.0.10
+ * @license MIT
+ */
 'use strict';
 
-const bake = require('../dist/bake-core');
+const bake = require('../dist/bake.core');
 const assert = require('assert');
 const fs = require('fs');
 const prolog = '<?xml version="1.0" encoding="UTF-8"?>';

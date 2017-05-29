@@ -2,10 +2,10 @@
 /*eslint-env node*/
 
 /**
- * bake-core
+ * bake.core
  * 
  * @author  Sam Olaogun
- * @version 1.0
+ * @version 1.0.10
  * @license MIT
  */
 'use strict';
