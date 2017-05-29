@@ -10,7 +10,7 @@
  */
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) { return typeof obj; } : function(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _prettyData = require('pretty-data');
 
@@ -112,27 +112,25 @@ var BakeCore = function BakeCore() {
             content = val;
 
         if (hasAttributes) {
-            if (!val[attributeIdentifier]) strict ? content = val[contentIdentifier] || ERRORS.throwContentErr() : content = val[contentIdentifier] || val;
-            else {;
+            if (!val[attributeIdentifier]) strict ? content = val[contentIdentifier] || ERRORS.throwContentErr() : content = val[contentIdentifier] || val;else {
+                ;
                 var _ref = [val[attributeIdentifier], val[contentIdentifier]];
                 attr = _ref[0];
                 content = _ref[1];
             }
         }
 
-        if (Array.isArray(content)) return parseArray(key, content);
-        else if ((typeof content === 'undefined' ? 'undefined' : _typeof(content)) === 'object') return parseXML(key, content, attr);
-        else return tagFactory(key, content, attr);
+        if (Array.isArray(content)) return parseArray(key, content);else if ((typeof content === 'undefined' ? 'undefined' : _typeof(content)) === 'object') return parseXML(key, content, attr);else return tagFactory(key, content, attr);
     };
 
     var parseXML = function parseXML(name, obj, attrs) {
-        return tagFactory(name, Object.keys(obj).reduce(function(acc, key) {
+        return tagFactory(name, Object.keys(obj).reduce(function (acc, key) {
             return acc += recursivePropertyCheck(key, obj[key]);
         }, ''), attrs);
     };
 
     var parseArray = function parseArray(name, arr, attrs) {
-        return arr.reduce(function(acc, val) {
+        return arr.reduce(function (acc, val) {
             return acc += recursivePropertyCheck(name, val, attrs);
         }, '');
     };
@@ -140,21 +138,20 @@ var BakeCore = function BakeCore() {
     var tagFactory = function tagFactory(name, content, attrs) {
         var keys = Object.keys(attrs);
 
-        keys.length > 0 ? attrs = keys.reduce(function(acc, attr) {
+        keys.length > 0 ? attrs = keys.reduce(function (acc, attr) {
             return acc += ' ' + attr + '="' + attrs[attr] + '"';
         }, '') : attrs = '';
 
         if (!content) return '<' + name + attrs + '/>';
 
-        if (name) return '<' + name + attrs + '>' + content + '</' + name + '>';
-        else return content;
+        if (name) return '<' + name + attrs + '>' + content + '</' + name + '>';else return content;
     };
 
     /**
      * @description    set up parsing environment
      * @returns        {Function}
      */
-    return function() {
+    return function () {
         /** @protected */
         var name = parent.name,
             attr = parent.attr;
@@ -169,7 +166,7 @@ var BakeCore = function BakeCore() {
         /** @protected */
         var handleObjectInput = function handleObjectInput(load, fileOutput) {
             try {
-                fileOutput ? _fs2.default.writeFileSync(fileOutput, getParsedXML(load)) : getParsedXML(load);
+                return fileOutput ? _fs2.default.writeFileSync(fileOutput, getParsedXML(load)) : _fs2.default.writeSync(1, getParsedXML(load));
             } catch (e) {
                 ERRORS.throwIOError();
             }
@@ -178,22 +175,17 @@ var BakeCore = function BakeCore() {
         /** @protected */
         var handleFileInput = function handleFileInput(path, fileOutput) {
             var load = JSON.parse(_fs2.default.readFileSync(path).toString());
-            try {
-                return fileOutput ? _fs2.default.writeFileSync(fileOutput, getParsedXML(load)) : getParsedXML(load);
-            } catch (e) {
-                ERRORS.throwIOError();
-            }
+            return handleObjectInput(load, fileOutput);
         };
 
-        return function() {
+        return function () {
             var input = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'in.json';
             var output = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-            if (typeof input === 'string') return handleFileInput(input, output);
-            else if ((typeof input === 'undefined' ? 'undefined' : _typeof(input)) === 'object') return handleObjectInput(input, output);
-            else ERRORS.throwInputErr();
+            if (typeof input === 'string') return handleFileInput(input, output);else if ((typeof input === 'undefined' ? 'undefined' : _typeof(input)) === 'object') return handleObjectInput(input, output);else ERRORS.throwInputErr();
         };
     }();
 };
 
 module.exports = BakeCore;
+
