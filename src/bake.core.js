@@ -145,8 +145,9 @@ const BakeCore = (opts = {}) => {
 
         /** @protected */
         const getParsedXML = load => {
-            const out = (prolog ? prolog : '') + parseXML(name, load, attr);
-            return format ? pd.xml(out) : out;
+            let out = parseXML(name, load, attr);
+            out = format ? pd.xml(out) : out;
+            return (prolog ? `${prolog}\n` : '') + out;
         };
 
         /** @protected */

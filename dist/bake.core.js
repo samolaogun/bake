@@ -159,8 +159,9 @@ var BakeCore = function BakeCore() {
         /** @protected */
 
         var getParsedXML = function getParsedXML(load) {
-            var out = (prolog ? prolog : '') + parseXML(name, load, attr);
-            return format ? _prettyData.pd.xml(out) : out;
+            var out = parseXML(name, load, attr);
+            out = format ? _prettyData.pd.xml(out) : out;
+            return (prolog ? prolog + '\n' : '') + out;
         };
 
         /** @protected */
