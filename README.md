@@ -158,10 +158,6 @@ Recommended general bake configuration.
 {
   "format": true,
   "attr": true,
-  "strict": true,
-  "attributeIdentifier": "attribute",
-  "prolog": "<!DOCTYPE html>",
-  "contentIdentifier": "innerHTML"
 }
 ```
 Bake has many practical applications, for example:
