@@ -1,0 +1,22 @@
+{
+  "name": "bake-core",
+  "version": "1.0.2",
+  "description": "A JSON to XML transformer.",
+  "main": "dist/bake-core.js",
+  "scripts": {
+    "build": "node_modules/.bin/babel src/bake-core.js > dist/bake-core.js",
+    "test": "node_modules/.bin/mocha"
+  },
+  "author": "Sam Olaogun <sam.olaogun@gmail.com> (http://samolaogun.com)",
+  "license": "MIT",
+  "dependencies": {
+    "pretty-data": "^0.40.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-3": "^6.24.1",
+    "mocha": "^3.4.2"
+  }
+}
