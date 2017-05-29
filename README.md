@@ -1,6 +1,6 @@
 # bake-core
 
-### Basic Usage
+## Basic Usage
 
 bake-core is a JSON to XML converter, not to be confused with bake-cli which provides a the command line tool derived from bake-core. When required, bake-core returns a function. Using it requires input information and optionally, a configuration object containing information describing how Bake should transform JSON.
 
@@ -49,7 +49,7 @@ customBake({
 }, 'file.xml');
 // ...
 ```
-### Options
+## Options
 
 Aforementioned, you may configure the bake-core to work as you like by passing a configuration object to the function. Here is the list of options:
 
@@ -78,7 +78,7 @@ const options = {
 - prolog `{String} [prolog='<?xml version="1.0" encoding="UTF-8"?>']`
   - include XML prolog, standard xml prolog by default
 
-### Attribute-Content Syntax
+## Attribute-Content Syntax
 
 JSON doesn't natively support an feature that directly mimics XML attributes. While it might seem intelligent to completely disregard this fact, most of the time, JSON meant to be parsed into XML will require attributes.
 
@@ -148,7 +148,7 @@ This is not ok.
 }
 ```
 
-### Examples
+## Examples
 
 Recommended general bake configuration.
 ```json
@@ -209,6 +209,6 @@ bake({
 })('circle.json', 'circle.svg');
 ```
 
-### License
+## License
 
 See it [here](http://github.com/samolaogun/bake-core/blob/master/LICENSE).
