@@ -152,7 +152,6 @@ This is not ok.
 
 Recommended general bake configuration.
 ```json
-// .bakeconfig
 {
   "format": true,
   "attr": "true"
