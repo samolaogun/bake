@@ -79,6 +79,9 @@ const options = {
   - include XML prolog, standard xml prolog by default
 
 ## Attribute-Content Syntax
+strict contentIdentiier is required
+
+attribute Idnetier recommended in bakerc
 
 JSON doesn't natively support an feature that directly mimics XML attributes. While it might seem intelligent to completely disregard this fact, most of the time, JSON meant to be parsed into XML will require attributes.
 
@@ -154,7 +157,11 @@ Recommended general bake configuration.
 ```json
 {
   "format": true,
-  "attr": true
+  "attr": true,
+  "strict": true,
+  "attributeIdentifier": "attribute",
+  "prolog": "<!DOCTYPE html>",
+  "contentIdentifier": "innerHTML"
 }
 ```
 Bake has many practical applications, for example:

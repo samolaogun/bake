@@ -1,3 +1,5 @@
+/*eslint no-unused-vars: ["error", { "vars": "local" }]*/
+
 /**
  * bake-core
  * 
@@ -20,7 +22,7 @@ const CONSTANTS = {
     ATTRIBUTE_IDENTIFIER: 'attr',
     CONTENT_IDENTIFIER: 'content',
     PROLOG: '<?xml version="1.0" encoding="UTF-8"?>',
-    DOTFILE: '.bakeconfig'
+    DOTFILE: '.bakerc' // UNIX standard
 };
 
 /**
@@ -37,10 +39,17 @@ const DEFAULTS = {
         name: '',
         attr: {}
     },
+    attributeIdentifier: CONSTANTS.ATTRIBUTE_IDENTIFIER,
+    contentIdentifier: CONSTANTS.CONTENT_IDENTIFIER,
+    strict: false,
     attr: false,
     format: true,
     prolog: CONSTANTS.PROLOG,
 };
+
+/*global throwContentErr contentIdentifier:true*/
+const throwContentErr = () => { throw new Error(`bake-core: "Strict Mode: Content Identifier "${contentIdentifier}" required"`); };
+const throwConfigErr = () => { throw new Error('bake-core: "Invalid config object"'); };
 
 /**
  * @param {Object}        opts    config object
@@ -55,28 +64,38 @@ const BakeCore = (opts = {}) => {
         try {
             opts = Object.assign({}, DEFAULTS, JSON.parse(config), opts);
         } catch (e) {
-            throw new Error('bake-core: Invalid configuration object.');
+            throwConfigErr();
         }
     } else {
         opts = Object.assign({}, DEFAULTS, opts);
     }
 
-    const { ATTRIBUTE_IDENTIFIER, CONTENT_IDENTIFIER, PROLOG } = CONSTANTS;
-    const { parent, attr, format, prolog } = opts;
+    const {
+        parent,
+        attr: hasAttributes,
+        attributeIdentifier,
+        contentIdentifier,
+        format,
+        strict,
+        prolog
+    } = opts;
 
     const recursivePropertyCheck = (key, val) => {
-        let tagAttr = {},
+        let attr = {},
             content = val;
 
-        if (attr)
-            if (!val[ATTRIBUTE_IDENTIFIER])
-                content = val[CONTENT_IDENTIFIER] || val;
+        if (hasAttributes) {
+            if (!val[attributeIdentifier])
+                strict ?
+                content = val[contentIdentifier] || throwContentErr() :
+                content = val[contentIdentifier] || val;
             else
-                [tagAttr, content] = [val[ATTRIBUTE_IDENTIFIER], val[CONTENT_IDENTIFIER]];
+                [attr, content] = [val[attributeIdentifier], val[contentIdentifier]];
+        }
 
         if (Array.isArray(content)) return parseArray(key, content);
-        else if (typeof content == 'object') return parseXML(key, content, tagAttr);
-        else return tagFactory(key, content, tagAttr);
+        else if (typeof content === 'object') return parseXML(key, content, attr);
+        else return tagFactory(key, content, attr);
     };
 
     const parseXML = (name, obj, attrs) =>
@@ -88,16 +107,21 @@ const BakeCore = (opts = {}) => {
         arr.reduce((acc, val) =>
             acc += recursivePropertyCheck(name, val, attrs), '');
 
-    const tagFactory = (tagName, content, attrs) => {
+    const tagFactory = (name, content, attrs) => {
         let keys = Object.keys(attrs);
 
         keys.length > 0 ?
-            attrs = keys.reduce((acc, attr) => acc += ` ${attr}="${attrs[attr]}"`, '') :
-            attrs = '';
+            attrs = keys.reduce((acc, attr) => acc += (
+                ` ${attr}="${attrs[attr]}"`
+            ), '') : attrs = '';
 
-        if (!content) return `<${tagName}${attrs}/>`;
+        if (!content) return (
+            `<${name}${attrs}/>`
+        );
 
-        if (tagName) return `<${tagName}${attrs}>${content}</${tagName}>`;
+        if (name) return (
+            `<${name}${attrs}>${content}</${name}>`
+        );
         else return content;
     };
 
@@ -131,6 +155,6 @@ const BakeCore = (opts = {}) => {
             else throw new Error('bake-core: Invalid JSON input.');
         };
     })();
-}
+};
 
 module.exports = BakeCore;

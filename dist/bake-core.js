@@ -1,3 +1,5 @@
+/*eslint no-unused-vars: ["error", { "vars": "local" }]*/
+
 /**
  * bake-core
  * 
@@ -27,7 +29,7 @@ var CONSTANTS = {
     ATTRIBUTE_IDENTIFIER: 'attr',
     CONTENT_IDENTIFIER: 'content',
     PROLOG: '<?xml version="1.0" encoding="UTF-8"?>',
-    DOTFILE: '.bakeconfig'
+    DOTFILE: '.bakerc' // UNIX standard
 };
 
 /**
@@ -44,9 +46,20 @@ var DEFAULTS = {
         name: '',
         attr: {}
     },
+    attributeIdentifier: CONSTANTS.ATTRIBUTE_IDENTIFIER,
+    contentIdentifier: CONSTANTS.CONTENT_IDENTIFIER,
+    strict: false,
     attr: false,
     format: true,
     prolog: CONSTANTS.PROLOG
+};
+
+/*global throwContentErr contentIdentifier:true*/
+var throwContentErr = function throwContentErr() {
+    throw new Error('bake-core: "Strict Mode: Content Identifier "' + contentIdentifier + '" required"');
+};
+var throwConfigErr = function throwConfigErr() {
+    throw new Error('bake-core: "Invalid config object"');
 };
 
 /**
@@ -64,33 +77,36 @@ var BakeCore = function BakeCore() {
         try {
             opts = Object.assign({}, DEFAULTS, JSON.parse(config), opts);
         } catch (e) {
-            throw new Error('bake-core: Invalid configuration object.');
+            throwConfigErr();
         }
     } else {
         opts = Object.assign({}, DEFAULTS, opts);
     }
 
-    var ATTRIBUTE_IDENTIFIER = CONSTANTS.ATTRIBUTE_IDENTIFIER,
-        CONTENT_IDENTIFIER = CONSTANTS.CONTENT_IDENTIFIER,
-        PROLOG = CONSTANTS.PROLOG;
     var _opts = opts,
         parent = _opts.parent,
-        attr = _opts.attr,
+        hasAttributes = _opts.attr,
+        attributeIdentifier = _opts.attributeIdentifier,
+        contentIdentifier = _opts.contentIdentifier,
         format = _opts.format,
+        strict = _opts.strict,
         prolog = _opts.prolog;
 
 
     var recursivePropertyCheck = function recursivePropertyCheck(key, val) {
-        var tagAttr = {},
+        var attr = {},
             content = val;
 
-        if (attr) if (!val[ATTRIBUTE_IDENTIFIER]) content = val[CONTENT_IDENTIFIER] || val;else {
-            ;
+        if (hasAttributes) {
+            if (!val[attributeIdentifier]) strict ? content = val[contentIdentifier] || throwContentErr() : content = val[contentIdentifier] || val;else {
+                ;
+                var _ref = [val[attributeIdentifier], val[contentIdentifier]];
+                attr = _ref[0];
+                content = _ref[1];
+            }
+        }
 
-            var _ref = [val[ATTRIBUTE_IDENTIFIER], val[CONTENT_IDENTIFIER]];
-            tagAttr = _ref[0];
-            content = _ref[1];
-        }if (Array.isArray(content)) return parseArray(key, content);else if ((typeof content === 'undefined' ? 'undefined' : _typeof(content)) == 'object') return parseXML(key, content, tagAttr);else return tagFactory(key, content, tagAttr);
+        if (Array.isArray(content)) return parseArray(key, content);else if ((typeof content === 'undefined' ? 'undefined' : _typeof(content)) === 'object') return parseXML(key, content, attr);else return tagFactory(key, content, attr);
     };
 
     var parseXML = function parseXML(name, obj, attrs) {
@@ -105,16 +121,16 @@ var BakeCore = function BakeCore() {
         }, '');
     };
 
-    var tagFactory = function tagFactory(tagName, content, attrs) {
+    var tagFactory = function tagFactory(name, content, attrs) {
         var keys = Object.keys(attrs);
 
         keys.length > 0 ? attrs = keys.reduce(function (acc, attr) {
             return acc += ' ' + attr + '="' + attrs[attr] + '"';
         }, '') : attrs = '';
 
-        if (!content) return '<' + tagName + attrs + '/>';
+        if (!content) return '<' + name + attrs + '/>';
 
-        if (tagName) return '<' + tagName + attrs + '>' + content + '</' + tagName + '>';else return content;
+        if (name) return '<' + name + attrs + '>' + content + '</' + name + '>';else return content;
     };
 
     /**
