@@ -176,14 +176,14 @@ Bake has many practical applications, for example:
 */
 
 bake({
-  prolog: '<!doctype html>',
-  format: true,
-  parent: { 
-    name: 'html',
-    attr: {
-      'lang': 'en'
-	  }
-  }
+    prolog: '<!doctype html>',
+    format: true,
+    parent: {
+        name: 'html',
+        attr: {
+            'lang': 'en'
+        }
+    }
 })('index.json', 'index.html');
 
 /* circle.json
@@ -199,14 +199,14 @@ bake({
 */
 
 bake({
-  format: true,
-  parent: {
-    name: 'svg',
-    attr: {
-      'xmlns': 'http://www.w3.org/2000/svg',
-      'viewBox': '0 0 60 60'
-	  }
-  }
+    format: true,
+    parent: {
+        name: 'svg',
+        attr: {
+            'xmlns': 'http://www.w3.org/2000/svg',
+            'viewBox': '0 0 60 60'
+        }
+    }
 })('circle.json', 'circle.svg');
 ```
 
