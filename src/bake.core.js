@@ -5,7 +5,7 @@
  * bake.core
  * 
  * @author  Sam Olaogun
- * @version 1.0.10
+ * @version 1.0.11
  * @license MIT
  */
 'use strict';
@@ -152,7 +152,9 @@ const BakeCore = (opts = {}) => {
         /** @protected */
         const handleObjectInput = (load, fileOutput) => {
             try {
-                fileOutput ? fs.writeFileSync(fileOutput, getParsedXML(load)) : getParsedXML(load);
+                return fileOutput ?
+                    fs.writeFileSync(fileOutput, getParsedXML(load)) :
+                    fs.writeSync(1, getParsedXML(load));
             } catch (e) {
                 ERRORS.throwIOError();
             }
@@ -161,11 +163,7 @@ const BakeCore = (opts = {}) => {
         /** @protected */
         const handleFileInput = (path, fileOutput) => {
             const load = JSON.parse(fs.readFileSync(path).toString());
-            try {
-                return fileOutput ? fs.writeFileSync(fileOutput, getParsedXML(load)) : getParsedXML(load);
-            } catch (e) {
-                ERRORS.throwIOError();
-            }
+            return handleObjectInput(load, fileOutput);
         };
 
         return (input = 'in.json', output = false) => {
