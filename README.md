@@ -112,8 +112,8 @@ A great example of this is SVG (Scalable Vectory Graphic), so it is the example 
 
 Here, the attributes of each element are separated from their content. This behavior stays consistent for any type of content (array, number, string, boolean, object). Additionally, this pattern allows us to omit either attributes or content without making an incorrect transformation. Note that if attributes are included, you must use the content property to demarcate your content. Objects with attributes and without a content property will be collapsed, and their other properties will not be evaluated. 
 
+This is fine.
 ```json
-// this is ok
 {
   "html": {
     "body": {
@@ -126,8 +126,9 @@ Here, the attributes of each element are separated from their content. This beha
     }
   }
 }
-
-// this is not ok
+````
+This is not ok.
+```json
 {
   "html": {
     "body": {
@@ -138,10 +139,8 @@ Here, the attributes of each element are separated from their content. This beha
       },
       "script": {
         "attr": {
-          // shorthand notation coming soon
           "defer": "true"
         },
-        // ignored, should be in "content" property
         "src": "path/to/js"
       },
     }
@@ -151,7 +150,7 @@ Here, the attributes of each element are separated from their content. This beha
 
 ### Examples
 
-Recommended general bake settings.
+Recommended general bake configuration.
 ```json
 // .bakeconfig
 {
