@@ -2,7 +2,7 @@
 
 ## Basic Usage
 
-bake.core is a JSON to XML converter, not to be confused with bake.cli which provides a the command line tool derived from bake.core. When required, bake.core returns a function. Using it requires input information and optionally, a configuration object containing information describing how Bake should transform JSON.
+bake.core is a JSON to XML converter, not to be confused with bake.cli which provides a the command-line tool derived from bake.core. When required, bake.core returns a function. Using it requires input information and optionally, a configuration object containing information describing how bake.core make a transform.
 
 ```javascript
 var bake = require('bake.core');
@@ -36,7 +36,7 @@ The reason why the bake.core function is curried is fairly simple. This architec
 ```javascript
 var customBake = bake({
     format: true,
-    prolog: true,
+    prolog: '', // no prolog
 });
 
 var xml = customBake('sample.json');
@@ -156,64 +156,15 @@ This is not ok.
 }
 ```
 
-## Examples
+## Configuration
 
 Recommended general bake configuration. These are global truths that stay constant over an entire project, specified within the `.bakerc` file. Add these locally, for the `.bakerc` file is looked for within the running context.
 ```json
 {
   "format": true,
   "attr": true,
+  "prolog": ""
 }
-```
-Bake has many practical applications, for example:
-```javascript
-/* index.json
-{
-    "head": {
-        "title": "Hello world!"
-    },
-    "body": {
-        "p": "Hello world!",
-        "img": {
-            "attr": {
-                "src": "./circle.svg"
-            }
-        }
-    }
-}
-*/
-
-bake({
-    prolog: '<!doctype html>',
-    parent: {
-        name: 'html',
-        attr: {
-            'lang': 'en'
-        }
-    }
-})('index.json', 'index.html');
-
-/* circle.json
-{
-    "circle": {
-        "attr": {
-            "r": "30",
-            "cx": "30",
-            "cy": "30"
-        }
-    }
-}
-*/
-
-bake({
-    parent: {
-        name: 'svg',
-        attr: {
-            'xmlns': 'http://www.w3.org/2000/svg',
-            'viewBox': '0 0 60 60'
-        }
-    }
-})('circle.json', 'circle.svg');
 ```
 
 ## License

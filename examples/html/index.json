@@ -1,0 +1,19 @@
+{
+    "head": {
+        "meta": {
+            "attribute": {
+                "name": "viewport",
+                "content": "width=device-width, initial-scale=1"
+            }
+        }
+    },
+    "body": {
+        "h1": "Hello world!",
+        "p": {
+            "attribute": {
+                "style": "color: black;"
+            },
+            "innerHTML": "fizzbuzz"
+        }
+    }
+}
