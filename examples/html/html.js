@@ -20,4 +20,4 @@ bake({
 })(inputPath, outputPath);
 
 // equivalent to 
-// bake -a 'attribute' -c 'innerHTML' -l '<!doctype html>' -p '{ "name": "html", "attr": { "lang": "en" }}' examples/html/index.json
+// bake -e -a 'attribute' -c 'innerHTML' -l '<!doctype html>' -p '{ "name": "html", "attr": { "lang": "en" }}' examples/html/index.json
