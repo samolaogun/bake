@@ -1,8 +1,11 @@
-# bake.core
+# Bake
 
-## Basic Usage
+## Overview
 
-bake.core is a JSON to XML converter, not to be confused with bake.cli which provides a the command-line tool derived from bake.core. When required, bake.core returns a function. Using it requires input information and optionally, a configuration object containing information describing how bake.core make a transform.
+Bake is a JSON to XML converter. Though it's relatively uncommon to transform JSON to XML, doing so is usually tedious. For one, there's no way to denote attributes and other XML specific features. Using Bake, making transformations that require these features is made simple.
+
+## Quick Start Guide
+When required, bake.core returns a function. Using it requires input information and optionally, a configuration object containing information describing how bake.core make a transform.
 
 ```javascript
 var bake = require('bake.core');
