@@ -73,25 +73,6 @@ const BakeCore = (opts = {}) => {
      * @property {Boolean}   [format=true]                   format the transformed document
      * @property {String}    [prolog=CONSTANTS.PROLOG]       prepend each transform with a specified prolog
      */
-    let config;
-    try {
-        config = fs.existsSync(CONSTANTS.DOTFILE);
-    } catch (e) {
-        ERRORS.throwConfigErr();
-    }
-
-    if (config) {
-        /** @mixin */
-        try {
-            config = fs.readFileSync(CONSTANTS.DOTFILE);
-            opts = Object.assign({}, DEFAULTS, JSON.parse(config), opts);
-        } catch (e) {
-            ERRORS.throwConfigErr();
-        }
-    } else {
-        opts = Object.assign({}, DEFAULTS, opts);
-    }
-
     const {
         parent,
         attr: hasAttributes,
@@ -100,7 +81,11 @@ const BakeCore = (opts = {}) => {
         format,
         strict,
         prolog
-    } = opts;
+    } =  { 
+        ...DEFAULTS, 
+        ...JSON.parse(fs.readFileSync(CONSTANTS.DOTFILE) || {})
+        ...opts
+    };
 
     const recursivePropertyCheck = (key, val) => {
         let attr = {},
@@ -109,48 +94,42 @@ const BakeCore = (opts = {}) => {
         if (hasAttributes) {
             if (!val[attributeIdentifier])
                 strict ?
-                content = val[contentIdentifier] || ERRORS.throwContentErr() :
-                content = val[contentIdentifier] || val;
+                    content = val[contentIdentifier] || ERRORS.throwContentErr() :
+                    content = val[contentIdentifier] || val;
             else
                 [attr, content] = [val[attributeIdentifier], val[contentIdentifier]];
         }
 
-        if (Array.isArray(content))
+        if (Array.isArray(content)) 
             return parseArray(key, content);
-        else if (typeof content === 'object')
+        else if (typeof content === 'object') 
             return parseXML(key, content, attr);
-        else
+        else 
             return tagFactory(key, content, attr);
     };
 
-    const parseXML = (name, obj, attrs) =>
+    const parseXML = (name = '', obj = {}, attrs = {}) =>
         tagFactory(name,
-            Object.keys(obj).reduce((acc, key) => acc += recursivePropertyCheck(key, obj[key]), ''),
+            Object.keys(obj).reduce((acc, key) => 
+                acc += recursivePropertyCheck(key, obj[key]), ''),
             attrs);
 
-    const parseArray = (name, arr, attrs) =>
+    const parseArray = (name = '', arr, attrs) =>
         arr.reduce((acc, val) =>
             acc += recursivePropertyCheck(name, val, attrs), '');
 
     const tagFactory = (name, content, attrs) => {
-        let keys = Object.keys(attrs);
-
-        keys.length > 0 ?
-            attrs = keys.reduce((acc, attr) => acc += (
-                ` ${attr}="${attrs[attr]}"`
-            ), '') : attrs = '';
+        Object.keys(attrs).length > 0 ?
+            attrs = keys.reduce((acc, attr) => 
+                acc += ` ${attr}="${attrs[attr]}"`
+            , '') : attrs = '';
 
         if (!content)
-            return (
-                `<${name}${attrs}/>`
-            );
+            return `<${name}${attrs}/>`;
 
-        if (name)
-            return (
-                `<${name}${attrs}>${content}</${name}>`
-            );
-        else
-            return content;
+        return name ?
+            `<${name}${attrs}>${content}</${name}>` :
+            content;
     };
 
     /**
